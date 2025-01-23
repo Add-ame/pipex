@@ -6,34 +6,30 @@ if it exist open it in read mode
 */
 int     main(int ac, char **av)
 {
-	// if (ac != 5)
-	// 	return (1);
-
-	// if (access(av[1], F_OK) == 0)
-	// 	printf("rah kayn");
-	// else
-	// 	perror(NULL);
-
+	int		fd[2];
 	int		id;
 	int		i;
+	int		j;
 
-	printf("beging hello from id: %d\n", id);
+	if (ac != 3)
+		return (0);
+	fd[0] = open(av[1], O_RDONLY);
+	if (fd[0] == -1)
+	{
+		perror("Error");
+		return (1);
+	}
+
 	id = fork();
-	// if (id == 0)
-	// 	sleep(1);
-
 	if (id == 0)
 	{
-		printf("child::::Current ID: %d, Parent ID: %d\n", getpid(), getppid());
+		char	*argv[] = {av[2], NULL};
+		dup2(fd[0], 0);
+		execve(av[2], argv, NULL);
 	}
 	else
-		printf("Current ID: %d, Parent ID: %d\n", getpid(), getppid());
-
-	int		res;
-	res = wait(NULL);
-	if (res == -1)
-		printf("No childre to wait for\n");
-	else
-		printf("%d finished execution\n", res);
+	{
+		wait(NULL);
+	}
 	return (0);
 }
