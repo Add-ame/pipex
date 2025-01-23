@@ -19,19 +19,21 @@ int     main(int ac, char **av)
 
 	printf("beging hello from id: %d\n", id);
 	id = fork();
+	// if (id == 0)
+	// 	sleep(1);
+
 	if (id == 0)
 	{
-		printf("this is child\n");
-		printf("%d\n", id);
-		printf("child pid %d\n", getpid());
-		// printf("%d\n", getppid());
-		// printf("The owner of this process has uid %d \n",getuid());
+		printf("child::::Current ID: %d, Parent ID: %d\n", getpid(), getppid());
 	}
 	else
-	{
-		printf("this is parent\n");
-		printf("%d\n", id);
-	}
+		printf("Current ID: %d, Parent ID: %d\n", getpid(), getppid());
 
+	int		res;
+	res = wait(NULL);
+	if (res == -1)
+		printf("No childre to wait for\n");
+	else
+		printf("%d finished execution\n", res);
 	return (0);
 }
