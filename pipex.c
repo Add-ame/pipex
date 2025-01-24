@@ -10,9 +10,8 @@ int     main(int ac, char **av)
 	int		id;
 	int		i;
 	int		j;
+	char	**argv;
 
-	if (ac != 3)
-		return (0);
 	fd[0] = open(av[1], O_RDONLY);
 	if (fd[0] == -1)
 	{
@@ -23,9 +22,9 @@ int     main(int ac, char **av)
 	id = fork();
 	if (id == 0)
 	{
-		char	*argv[] = {av[2], NULL};
+		argv = ft_split(av[2], ' ');
 		dup2(fd[0], 0);
-		execve(av[2], argv, NULL);
+		execve(ft_strjoin("/usr/bin/", argv[0]), argv, NULL);
 	}
 	else
 	{
