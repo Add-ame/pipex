@@ -8,7 +8,6 @@
 #include <sys/wait.h>
 
 
-
 char	**ft_split(char const *s, char c);
 char	*ft_strjoin(char const *s1, char const *s2);
 
