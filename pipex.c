@@ -24,7 +24,11 @@ int     main(int ac, char **av)
 	{
 		argv = ft_split(av[2], ' ');
 		dup2(fd[0], 0);
-		execve(ft_strjoin("/usr/bin/", argv[0]), argv, NULL);
+		if (execve("/home/maddame/Desktop/pipex/script", argv, NULL) == -1)
+		{
+			perror(NULL);
+			return (1);
+		}
 	}
 	else
 	{
