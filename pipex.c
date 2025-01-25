@@ -28,13 +28,13 @@ int     main(int ac, char **av)
 		cmd1 = ft_strjoin("/usr/bin/", argv[0]);
 		if (access(cmd1, F_OK | X_OK) == -1)
 		{
-			write(2, "Command not found\n", 18);
-			exit(127);
+			write(2, "Command not foundddd\n", 18);
+			exit(1);
 		}
 		if (execve(cmd1, argv, NULL) == -1)
 		{
 			perror(NULL);
-			exit(127); // temporary
+			exit(1);
 		}
 	}
 	else
