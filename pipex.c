@@ -11,6 +11,7 @@ int     main(int ac, char **av)
 	int		i;
 	int		j;
 	char	**argv;
+	char	*cmd1;
 
 	fd[0] = open(av[1], O_RDONLY);
 	if (fd[0] == -1)
@@ -24,10 +25,16 @@ int     main(int ac, char **av)
 	{
 		argv = ft_split(av[2], ' ');
 		dup2(fd[0], 0);
-		if (execve("/home/maddame/Desktop/pipex/script", argv, NULL) == -1)
+		cmd1 = ft_strjoin("/usr/bin/", argv[0]);
+		if (access(cmd1, F_OK | X_OK) == -1)
+		{
+			write(2, "Command not found\n", 18);
+			exit(127);
+		}
+		if (execve(cmd1, argv, NULL) == -1)
 		{
 			perror(NULL);
-			return (1);
+			exit(127); // temporary
 		}
 	}
 	else
