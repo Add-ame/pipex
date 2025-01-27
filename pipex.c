@@ -73,11 +73,11 @@ void	put_error(char *s)
 
 int     main(int ac, char **av, char **env)
 {
-	int		pid_1;
+	int		pid_1, pid_2;
 	int		i, j;
-	int		fd[2], fd1;
+	int		fd[2], fd1, fd2;
 	int		wait_status, status_code;
-	char	*cmd_1, **argv;
+	char	*cmd_1, *cmd_2, **argv;
 
 	pipe(fd);
 	fd1 = open(av[1], O_RDONLY);
@@ -102,24 +102,24 @@ int     main(int ac, char **av, char **env)
 	else
 		close(fd1);
 
-	fd1 = open(av[4], O_CREAT | O_WRONLY, 0777);
-	pid_1 = fork();
-	if (pid_1 == 0)
+	fd2 = open(av[4], O_CREAT | O_WRONLY, 0777);
+	pid_2 = fork();
+	if (pid_2 == 0)
 	{
 		dup2(fd[0], 0);
-		dup2(fd1, 1);
+		dup2(fd2, 1);
 		close(fd[0]);
 		close(fd[1]);
 		argv = ft_split(av[3], ' ');
-		cmd_1 = check_cmd_env(argv[0], env);
-		if (!cmd_1)
+		cmd_2 = check_cmd_env(argv[0], env);
+		if (!cmd_2)
 		{
 			put_error(argv[0]);
 			free_pt(argv);
 			exit(127);
 		}
-		cmd_1 = ft_strjoin(cmd_1, argv[0]);
-		execve(cmd_1, argv, NULL);
+		cmd_2 = ft_strjoin(cmd_2, argv[0]);
+		execve(cmd_2, argv, NULL);
 	}
 	else
 		close(fd1);
