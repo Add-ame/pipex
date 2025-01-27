@@ -101,9 +101,6 @@ int     main(int ac, char **av, char **env)
 	}
 	else
 		close(fd1);
-	close(fd[0]);
-	close(fd[1]);
-	waitpid(pid_1, NULL, 0);
 
 	fd1 = open(av[4], O_CREAT | O_WRONLY, 0777);
 	pid_1 = fork();
@@ -129,6 +126,7 @@ int     main(int ac, char **av, char **env)
 
 	close(fd[0]);
 	close(fd[1]);
+	waitpid(pid_1, NULL, 0);
 	wait(&wait_status);
 	status_code = WEXITSTATUS(wait_status);
 	exit(status_code);
