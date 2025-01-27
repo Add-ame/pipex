@@ -22,14 +22,13 @@ char	*check_cmd_env(char *argv, char **env)
 	char	*cmd;
 	char	*tmp;
 
+	if (!argv || !ft_strlen(argv) || !c_w(argv, ' '))
+		return (NULL);
 	i = 0;
 	finded = 0;
 	while (++i >= 0 && env[i])
 		if (strncmp("PATH=", env[i], 5) == 0 && ++finded == 1)
 			break;
-
-	if (!ft_strlen(argv) || !c_w(argv, ' '))
-		return (NULL);
 	pt = ft_split(env[i] + 5, ':');
 	finded = 0;
 	i = 0;
@@ -102,6 +101,8 @@ int     main(int ac, char **av, char **env)
 	}
 	else
 		close(fd1);
+	close(fd[0]);
+	close(fd[1]);
 	waitpid(pid_1, NULL, 0);
 
 	fd1 = open(av[4], O_CREAT | O_WRONLY, 0777);
