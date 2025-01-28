@@ -55,12 +55,29 @@ void	put_error(char *s)
 	write(2, "\n", 1);
 }
 
+void init(t_data *d)
+{
+	d->argv = NULL;
+	d->cmd_1 = NULL;
+	d->cmd_2 = NULL;
+	d->fd_1 = 0;
+	d->fd_2 = 0;
+	d->wait_status = 0;
+	d->status_code = 0;
+	d->flag = 0;
+	d->pid_1 = 0;
+	d->pid_2 = 0;
+	d->i = 0;
+	d->j = 0;
+}
+
 int     main(int ac, char **av, char **env)
 {
 	t_data	d;
 
 	if (ac != 5)
 		exit(22);
+	init(&d);
 	pipe(d.fd);
 	d.fd_1 = open(av[1], O_RDONLY);
 	if (d.fd_1 == -1)
