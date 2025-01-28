@@ -117,9 +117,9 @@ int     main(int ac, char **av, char **env)
 
 	close(d.fd[0]);
 	close(d.fd[1]);
-	waitpid(pid_2, &wait_status, 0);
-	waitpid(pid_1, NULL, 0);
-	status_code = WEXITSTATUS(wait_status);
-	exit(status_code);
+	waitpid(d.pid_2, &d.wait_status, 0);
+	waitpid(d.pid_1, NULL, 0);
+	d.status_code = WEXITSTATUS(d.wait_status);
+	exit(d.status_code);
 	return (0);
 }
