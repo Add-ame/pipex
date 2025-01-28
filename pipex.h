@@ -10,7 +10,22 @@
 #include <string.h>
 
 
-
+typedef struct s_data
+{
+    int     fd[2];
+    int     fd_1;
+    int     fd_2;
+    int     wait_status;
+    int     status_code;
+    char    *cmd_1;
+    char    *cmd_2;
+    char    **argv;
+    int     flag;
+    int     pid_1;
+    int     pid_2;
+    int     i;
+    int     j;
+}   t_data;
 
 char	**ft_split(char const *s, char c);
 char	*ft_strjoin(char const *s1, char const *s2);
