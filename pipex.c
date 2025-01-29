@@ -55,88 +55,76 @@ void	put_error(char *s)
 	write(2, "\n", 1);
 }
 
-void init(t_data *d)
-{
-	d->argv = NULL;
-	d->cmd_1 = NULL;
-	d->cmd_2 = NULL;
-	d->fd_1 = 0;
-	d->fd_2 = 0;
-	d->wait_status = 0;
-	d->status_code = 0;
-	d->flag = 0;
-	d->pid_1 = 0;
-	d->pid_2 = 0;
-	d->i = 0;
-	d->j = 0;
-}
-
 int     main(int ac, char **av, char **env)
 {
-	t_data	d;
+	int		pid_1, pid_2;
+	int		i, j;
+	int		fd[2], fd1, fd2;
+	int		wait_status, status_code;
+	char	*cmd_1, *cmd_2, **argv;
+	int		flag = 0;
 
 	if (ac != 5)
 		exit(22);
-	init(&d);
-	pipe(d.fd);
-	d.fd_1 = open(av[1], O_RDONLY);
-	if (d.fd_1 == -1)
-		d.fd_1 = open("/dev/null", O_RDONLY);
-	d.pid_1 = fork();
-	if (d.pid_1 == 0)
+	pipe(fd);
+	fd1 = open(av[1], O_RDONLY);
+	if (fd1 == -1)
+		fd1 = open("/dev/null", O_RDONLY);
+	pid_1 = fork();
+	if (pid_1 == 0)
 	{
-		dup2(d.fd_1, 0);
-		dup2(d.fd[1], 1);
-		close(d.fd[0]);
-		close(d.fd[1]);
-		d.argv = ft_split(av[2], ' ');
-		d.cmd_1 = check_cmd_env(d.argv[0], env);
-		if (!d.cmd_1)
+		dup2(fd1, 0);
+		dup2(fd[1], 1);
+		close(fd[0]);
+		close(fd[1]);
+		argv = ft_split(av[2], ' ');
+		cmd_1 = check_cmd_env(argv[0], env);
+		if (!cmd_1)
 		{
-			put_error(d.argv[0]);
-			free_pt(d.argv);
+			put_error(argv[0]);
+			free_pt(argv);
 			exit(127);
 		}
-		d.cmd_1 = ft_strjoin(d.cmd_1, d.argv[0]);
-		execve(d.cmd_1, d.argv, env);
+		cmd_1 = ft_strjoin(cmd_1, argv[0]);
+		execve(cmd_1, argv, env);
 	}
 	else
-		close(d.fd_1);
+		close(fd1);
 
-	d.fd_2 = open(av[4], O_CREAT | O_WRONLY | O_TRUNC, 0777);
-	if (d.fd_2 == -1)
+	fd2 = open(av[4], O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	if (fd2 == -1)
 	{
 		perror(NULL);
-		d.flag = 1;
+		flag = 1;
 	}
-	d.pid_2 = fork();
-	if (d.pid_2 == 0)
+	pid_2 = fork();
+	if (pid_2 == 0)
 	{
-		if (d.flag == 1)
+		if (flag == 1)
 			exit(1);
-		dup2(d.fd[0], 0);
-		dup2(d.fd_2, 1);
-		close(d.fd[0]);
-		close(d.fd[1]);
-		d.argv = ft_split(av[3], ' ');
-		d.cmd_2 = check_cmd_env(d.argv[0], env);
-		if (!d.cmd_2)
+		dup2(fd[0], 0);
+		dup2(fd2, 1);
+		close(fd[0]);
+		close(fd[1]);
+		argv = ft_split(av[3], ' ');
+		cmd_2 = check_cmd_env(argv[0], env);
+		if (!cmd_2)
 		{
-			put_error(d.argv[0]);
-			free_pt(d.argv);
+			put_error(argv[0]);
+			free_pt(argv);
 			exit(127);
 		}
-		d.cmd_2 = ft_strjoin(d.cmd_2, d.argv[0]);
-		execve(d.cmd_2, d.argv, env);
+		cmd_2 = ft_strjoin(cmd_2, argv[0]);
+		execve(cmd_2, argv, env);
 	}
 	else
-		close(d.fd_1);
+		close(fd1);
 
-	close(d.fd[0]);
-	close(d.fd[1]);
-	waitpid(d.pid_2, &d.wait_status, 0);
-	waitpid(d.pid_1, NULL, 0);
-	d.status_code = WEXITSTATUS(d.wait_status);
-	exit(d.status_code);
+	close(fd[0]);
+	close(fd[1]);
+	waitpid(pid_2, &wait_status, 0);
+	waitpid(pid_1, NULL, 0);
+	status_code = WEXITSTATUS(wait_status);
+	exit(status_code);
 	return (0);
 }
