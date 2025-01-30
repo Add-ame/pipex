@@ -69,10 +69,7 @@ int     main(int ac, char **av, char **env)
 	i = 0;
 	while (i <= ac - 2)
 		pipe(fd[i++]);
-	// pipe(fd[0]);
-	// pipe(fd[1]);
-	// pipe(fd[2]);
-	// pipe(fd[3]);
+
 	infile = open(av[1], O_RDONLY);
 	if (infile == -1)
 		infile = open("/dev/null", O_RDONLY);
@@ -81,14 +78,13 @@ int     main(int ac, char **av, char **env)
 	{
 		dup2(infile, 0);
 		dup2(fd[0][1], 1);
-		close(fd[0][0]);
-		close(fd[0][1]);
-		close(fd[1][0]);
-		close(fd[1][1]);
-		close(fd[2][0]);
-		close(fd[2][1]);
-		close(fd[3][0]);
-		close(fd[3][1]);
+		j = 0;
+		while (j <= ac - 2)
+		{
+			close(fd[j][0]);
+			close(fd[j][1]);
+			j++;
+		}
 		argv = ft_split(av[2], ' ');
 		cmd_1 = check_cmd_env(argv[0], env);
 		cmd_1 = ft_strjoin(cmd_1, argv[0]);
@@ -105,14 +101,13 @@ int     main(int ac, char **av, char **env)
 		{
 			dup2(fd[i - 3][0], 0);
 			dup2(fd[i - 2][1], 1);
-			close(fd[0][0]);
-			close(fd[0][1]);
-			close(fd[1][0]);
-			close(fd[1][1]);
-			close(fd[2][0]);
-			close(fd[2][1]);
-			close(fd[3][0]);
-			close(fd[3][1]);
+			j = 0;
+			while (j <= ac - 2)
+			{
+				close(fd[j][0]);
+				close(fd[j][1]);
+				j++;
+			}
 			argv = ft_split(av[i], ' ');
 			cmd_1 = check_cmd_env(argv[0], env);
 			cmd_1 = ft_strjoin(cmd_1, argv[0]);
@@ -134,14 +129,13 @@ int     main(int ac, char **av, char **env)
 			exit(1);
 		dup2(fd[3][0], 0);
 		dup2(outfile, 1);
-		close(fd[0][0]);
-		close(fd[0][1]);
-		close(fd[1][0]);
-		close(fd[1][1]);
-		close(fd[2][0]);
-		close(fd[2][1]);
-		close(fd[3][0]);
-		close(fd[3][1]);
+		j = 0;
+		while (j <= ac - 2)
+		{
+			close(fd[j][0]);
+			close(fd[j][1]);
+			j++;
+		}
 		argv = ft_split(av[i], ' ');
 		cmd_1 = check_cmd_env(argv[0], env);
 		cmd_1 = ft_strjoin(cmd_1, argv[0]);
@@ -150,14 +144,13 @@ int     main(int ac, char **av, char **env)
 	else
 		close(outfile);
 
-	close(fd[0][0]);
-	close(fd[0][1]);
-	close(fd[1][0]);
-	close(fd[1][1]);
-	close(fd[2][0]);
-	close(fd[2][1]);
-	close(fd[3][0]);
-	close(fd[3][1]);
+	j = 0;
+	while (j <= ac - 2)
+	{
+		close(fd[j][0]);
+		close(fd[j][1]);
+		j++;
+	}
 	while (wait(&wait_status) > 0);
 	return (0);
 }
