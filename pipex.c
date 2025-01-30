@@ -59,21 +59,20 @@ int     main(int ac, char **av, char **env)
 {
 	int		pid_1, pid_2, pid_3, pid_4;
 	int		i, j;
-	int		fd[4][2];
+	int		fd[1024][2];
 	int		fd_1[2], fd_2[2], fd_3[2], fd_4[2], infile, outfile;
 	int		wait_status, status_code;
 	char	*cmd_1, **argv;
 	int		flag = 0;
 
 	ac -= 3;
-	// while (ac >= 0)
-	// {
-	// 	pipe(fd_1);
-	// }
-	pipe(fd[0]);
-	pipe(fd[1]);
-	pipe(fd[2]);
-	pipe(fd[3]);
+	i = 0;
+	while (i <= ac - 2)
+		pipe(fd[i++]);
+	// pipe(fd[0]);
+	// pipe(fd[1]);
+	// pipe(fd[2]);
+	// pipe(fd[3]);
 	infile = open(av[1], O_RDONLY);
 	if (infile == -1)
 		infile = open("/dev/null", O_RDONLY);
@@ -98,62 +97,68 @@ int     main(int ac, char **av, char **env)
 	else
 		close(infile);
 
-	pid_1 = fork();
-	if (pid_1 == 0)
+	i = 3;
+	while (i < 6)
 	{
-		dup2(fd[0][0], 0);
-		dup2(fd[1][1], 1);
-		close(fd[0][0]);
-		close(fd[0][1]);
-		close(fd[1][0]);
-		close(fd[1][1]);
-		close(fd[2][0]);
-		close(fd[2][1]);
-		close(fd[3][0]);
-		close(fd[3][1]);
-		argv = ft_split(av[3], ' ');
-		cmd_1 = check_cmd_env(argv[0], env);
-		cmd_1 = ft_strjoin(cmd_1, argv[0]);
-		execve(cmd_1, argv, env);
+		pid_1 = fork();
+		if (pid_1 == 0)
+		{
+			dup2(fd[i - 3][0], 0);
+			dup2(fd[i - 2][1], 1);
+			close(fd[0][0]);
+			close(fd[0][1]);
+			close(fd[1][0]);
+			close(fd[1][1]);
+			close(fd[2][0]);
+			close(fd[2][1]);
+			close(fd[3][0]);
+			close(fd[3][1]);
+			argv = ft_split(av[i], ' ');
+			cmd_1 = check_cmd_env(argv[0], env);
+			cmd_1 = ft_strjoin(cmd_1, argv[0]);
+			execve(cmd_1, argv, env);
+		}
+		i++;
 	}
 
-	pid_1 = fork();
-	if (pid_1 == 0)
-	{
-		dup2(fd[1][0], 0);
-		dup2(fd[2][1], 1);
-		close(fd[0][0]);
-		close(fd[0][1]);
-		close(fd[1][0]);
-		close(fd[1][1]);
-		close(fd[2][0]);
-		close(fd[2][1]);
-		close(fd[3][0]);
-		close(fd[3][1]);
-		argv = ft_split(av[4], ' ');
-		cmd_1 = check_cmd_env(argv[0], env);
-		cmd_1 = ft_strjoin(cmd_1, argv[0]);
-		execve(cmd_1, argv, env);
-	}
 
-	pid_1 = fork();
-	if (pid_1 == 0)
-	{
-		dup2(fd[2][0], 0);
-		dup2(fd[3][1], 1);
-		close(fd[0][0]);
-		close(fd[0][1]);
-		close(fd[1][0]);
-		close(fd[1][1]);
-		close(fd[2][0]);
-		close(fd[2][1]);
-		close(fd[3][0]);
-		close(fd[3][1]);
-		argv = ft_split(av[5], ' ');
-		cmd_1 = check_cmd_env(argv[0], env);
-		cmd_1 = ft_strjoin(cmd_1, argv[0]);
-		execve(cmd_1, argv, env);
-	}
+	// pid_1 = fork();
+	// if (pid_1 == 0)
+	// {
+	// 	dup2(fd[1][0], 0);
+	// 	dup2(fd[2][1], 1);
+	// 	close(fd[0][0]);
+	// 	close(fd[0][1]);
+	// 	close(fd[1][0]);
+	// 	close(fd[1][1]);
+	// 	close(fd[2][0]);
+	// 	close(fd[2][1]);
+	// 	close(fd[3][0]);
+	// 	close(fd[3][1]);
+	// 	argv = ft_split(av[4], ' ');
+	// 	cmd_1 = check_cmd_env(argv[0], env);
+	// 	cmd_1 = ft_strjoin(cmd_1, argv[0]);
+	// 	execve(cmd_1, argv, env);
+	// }
+
+	// pid_1 = fork();
+	// if (pid_1 == 0)
+	// {
+	// 	dup2(fd[2][0], 0);
+	// 	dup2(fd[3][1], 1);
+	// 	close(fd[0][0]);
+	// 	close(fd[0][1]);
+	// 	close(fd[1][0]);
+	// 	close(fd[1][1]);
+	// 	close(fd[2][0]);
+	// 	close(fd[2][1]);
+	// 	close(fd[3][0]);
+	// 	close(fd[3][1]);
+	// 	argv = ft_split(av[5], ' ');
+	// 	cmd_1 = check_cmd_env(argv[0], env);
+	// 	cmd_1 = ft_strjoin(cmd_1, argv[0]);
+	// 	execve(cmd_1, argv, env);
+	// }
 
 	outfile = open(av[7], O_CREAT | O_WRONLY | O_TRUNC, 0777);
 	if (outfile == -1)
