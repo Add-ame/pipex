@@ -70,10 +70,10 @@ int     main(int ac, char **av, char **env)
 	// {
 	// 	pipe(fd_1);
 	// }
-	pipe(fd_1);
-	pipe(fd_2);
-	pipe(fd_3);
-	pipe(fd_4);
+	pipe(fd[0]);
+	pipe(fd[1]);
+	pipe(fd[2]);
+	pipe(fd[3]);
 	infile = open(av[1], O_RDONLY);
 	if (infile == -1)
 		infile = open("/dev/null", O_RDONLY);
