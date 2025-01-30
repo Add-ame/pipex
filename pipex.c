@@ -58,6 +58,8 @@ void	put_error(char *s)
 int     main(int ac, char **av, char **env)
 {
 	int		pid_1, pid_2, pid_3, pid_4;
+	int		num_pipes;
+	int		num_cmds;
 	int		i, j;
 	int		fd[1024][2];
 	int		fd_1[2], fd_2[2], fd_3[2], fd_4[2], infile, outfile;
@@ -66,8 +68,10 @@ int     main(int ac, char **av, char **env)
 	int		flag = 0;
 
 	ac -= 3;
+	num_cmds = ac;
+	num_pipes = num_cmds - 1;
 	i = 0;
-	while (i <= ac - 2)
+	while (i < num_pipes)
 		pipe(fd[i++]);
 
 	infile = open(av[1], O_RDONLY);
@@ -79,7 +83,7 @@ int     main(int ac, char **av, char **env)
 		dup2(infile, 0);
 		dup2(fd[0][1], 1);
 		j = 0;
-		while (j <= ac - 2)
+		while (j < num_pipes)
 		{
 			close(fd[j][0]);
 			close(fd[j][1]);
@@ -94,7 +98,7 @@ int     main(int ac, char **av, char **env)
 		close(infile);
 
 	i = 3;
-	while (i < 6)
+	while (i <= num_cmds)
 	{
 		pid_1 = fork();
 		if (pid_1 == 0)
@@ -102,7 +106,7 @@ int     main(int ac, char **av, char **env)
 			dup2(fd[i - 3][0], 0);
 			dup2(fd[i - 2][1], 1);
 			j = 0;
-			while (j <= ac - 2)
+			while (j < num_pipes)
 			{
 				close(fd[j][0]);
 				close(fd[j][1]);
@@ -130,7 +134,7 @@ int     main(int ac, char **av, char **env)
 		dup2(fd[3][0], 0);
 		dup2(outfile, 1);
 		j = 0;
-		while (j <= ac - 2)
+		while (j < num_pipes)
 		{
 			close(fd[j][0]);
 			close(fd[j][1]);
@@ -145,7 +149,7 @@ int     main(int ac, char **av, char **env)
 		close(outfile);
 
 	j = 0;
-	while (j <= ac - 2)
+	while (j < num_pipes)
 	{
 		close(fd[j][0]);
 		close(fd[j][1]);
