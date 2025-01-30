@@ -67,8 +67,7 @@ int     main(int ac, char **av, char **env)
 	char	*cmd_1, **argv;
 	int		flag = 0;
 
-	ac -= 3;
-	num_cmds = ac;
+	num_cmds = ac - 3;
 	num_pipes = num_cmds - 1;
 	i = 0;
 	while (i < num_pipes)
@@ -131,7 +130,7 @@ int     main(int ac, char **av, char **env)
 	{
 		if (flag == 1)
 			exit(1);
-		dup2(fd[3][0], 0);
+		dup2(fd[i - 3][0], 0);
 		dup2(outfile, 1);
 		j = 0;
 		while (j < num_pipes)
