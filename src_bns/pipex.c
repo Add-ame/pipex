@@ -157,18 +157,73 @@ void	pipe_them(t_data *d, char **av, char **env)
 void	here_doc(t_data *d, char **av, char **env)
 {
 	char	*s;
-	int		fd;
+	int		here;
 
-	fd = open("here", O_CREAT | O_APPEND, 0777);
+	here = open("here", O_CREAT | O_APPEND, 0777);
 	while (1)
 	{
 		write(1, "pipe heredoc> ", 14);
 		s = get_next_line(0);
-		if (!strcmp(s, av[2]))
+		if (strcmp(s, av[2]) == 0)
 			break;
-		write(fd, s, ft_strlen(s));
-		free(s);
+		write(1, s, ft_strlen(s));
+		// free(s);
 	}
+	pipe(d->fd[0]);
+	d->pid_1 = fork();
+	if (d->pid_1 == 0)
+	{
+		if (!ft_strlen(av[3]))
+			(ft_putstr("permission denied:", 2, 1), exit(126));
+		(dup2(here, 0), dup2(d->fd[0][1], 1));
+		(close(d->fd[0][0]), close(d->fd[0][1]));
+		d->argv = ft_split(av[3], ' ', d);
+		d->cmd_1 = check_cmd_env(d, d->argv[0], env);
+		if (!d->cmd_1)
+		{
+			if (!only_space(av[3]))
+				(ft_putstr("command not found: ", 2, 1), free_pt(d->argv), \
+				exit(127));
+			ft_putstr("command not found: ", 2, 0);
+			(ft_putstr(d->argv[0], 2, 1), free_pt(d->argv), exit(127));
+		}
+		d->cmd_1 = ft_strjoin(d->cmd_1, d->argv[0]);
+		execve(d->cmd_1, d->argv, env);
+	}
+	else
+		close(d->infile);
+
+	d->outfile = open(av[5], O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	if (d->outfile == -1)
+	{
+		put_fd_err(d, av, 2);
+		d->flag = 1;
+	}
+	d->pid_2 = fork();
+	if (d->pid_2 == 0)
+	{
+		if (!ft_strlen(av[4]))
+			(ft_putstr("permission denied:", 2, 1), exit(126));
+		if (d->flag == 1)
+			exit(1);
+		(dup2(d->fd[0][0], 0), dup2(d->outfile, 1));
+		(close(d->fd[0][0]), close(d->fd[0][1]));
+		d->argv = ft_split(av[4], ' ', d);
+		d->cmd_2 = check_cmd_env(d, d->argv[0], env);
+		if (!d->cmd_2)
+			(ft_putstr("command not found: ", 2, 0), ft_putstr(d->argv[0], 2, \
+			1), free_pt(d->argv), exit(127));
+		d->cmd_2 = ft_strjoin(d->cmd_2, d->argv[0]);
+		execve(d->cmd_2, d->argv, env);
+	}
+	else
+		close(d->infile);
+
+	(close(d->fd[0][0]), close(d->fd[0][1]));
+	waitpid(d->pid_1, NULL, 0);
+	waitpid(d->pid_2, &d->wait_status, 0);
+	d->status_code = WEXITSTATUS(d->wait_status);
+	exit(d->status_code);
 }
 
 int	main(int ac, char **av, char **env)
