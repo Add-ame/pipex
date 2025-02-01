@@ -167,7 +167,7 @@ void	here_doc(t_data *d, char **av, char **env)
 	char	*s;
 	int		here;
 
-	here = open("here", O_CREAT | O_RDWR | O_APPEND, 0777);
+	here = open("here", O_CREAT | O_WRONLY | O_APPEND, 0777);
 	while (1)
 	{
 		write(1, "pipe heredoc> ", 14);
@@ -182,6 +182,7 @@ void	here_doc(t_data *d, char **av, char **env)
 	d->pid_1 = fork();
 	if (d->pid_1 == 0)
 	{
+		here = open("here", O_RDONLY | O_APPEND);
 		if (!ft_strlen(av[3]))
 			(ft_putstr("permission denied:", 2, 1), exit(126));
 		dup2(here, 0), dup2(d->fd[0][1], 1);
