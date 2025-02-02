@@ -150,32 +150,41 @@ void	pipe_them(t_data *d, char **av, char **env)
 	while (wait(NULL) > 0);
 }
 
-/**
- * 1- write before reading
- * 2- 
- */
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	while (*s1 && *s2)
+	{
+		if (*s1 != *s2)
+			return (*(unsigned char *)s1 - *(unsigned char *)s2);
+		s1++;
+		s2++;
+	}
+	return (0);
+}
+
 void	here_doc(t_data *d, char **av, char **env)
 {
 	char	*s;
-	int		here;
 
-	here = open("here", O_CREAT | O_APPEND, 0777);
+	d->here_doc = open("d->here_doc", O_CREAT | O_WRONLY | O_APPEND, 0777);
 	while (1)
 	{
 		write(1, "pipe heredoc> ", 14);
 		s = get_next_line(0);
-		if (strcmp(s, av[2]) == 0)
+		if (!s || ft_strcmp(s, av[2]) == 0)
 			break;
-		write(1, s, ft_strlen(s));
-		// free(s);
+		write(d->here_doc, s, ft_strlen(s));
+		free(s);
 	}
+
 	pipe(d->fd[0]);
 	d->pid_1 = fork();
 	if (d->pid_1 == 0)
 	{
+		d->here_doc = open("d->here_doc", O_RDONLY | O_APPEND);
 		if (!ft_strlen(av[3]))
 			(ft_putstr("permission denied:", 2, 1), exit(126));
-		(dup2(here, 0), dup2(d->fd[0][1], 1));
+		dup2(d->here_doc, 0), dup2(d->fd[0][1], 1);
 		(close(d->fd[0][0]), close(d->fd[0][1]));
 		d->argv = ft_split(av[3], ' ', d);
 		d->cmd_1 = check_cmd_env(d, d->argv[0], env);
@@ -191,7 +200,7 @@ void	here_doc(t_data *d, char **av, char **env)
 		execve(d->cmd_1, d->argv, env);
 	}
 	else
-		close(d->infile);
+		close(d->here_doc);
 
 	d->outfile = open(av[5], O_CREAT | O_WRONLY | O_TRUNC, 0777);
 	if (d->outfile == -1)
@@ -217,7 +226,7 @@ void	here_doc(t_data *d, char **av, char **env)
 		execve(d->cmd_2, d->argv, env);
 	}
 	else
-		close(d->infile);
+		close(d->outfile);
 
 	(close(d->fd[0][0]), close(d->fd[0][1]));
 	waitpid(d->pid_1, NULL, 0);
